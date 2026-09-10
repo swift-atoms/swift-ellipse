@@ -1,8 +1,6 @@
 @_exported public import Magnitude
 @_exported public import Rotation
 
-/// An oriented elliptical boundary parameterization in a supplied coordinate plane.
-/// Semi-axis lengths are finite, nonnegative and ordered major >= minor.
 public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingPoint> {
     public var center: Point
     public let semiMajor: Magnitude<Length>
@@ -20,13 +18,11 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
         self.orientation = orientation
     }
 
-    /// Equal axes are a circular boundary specialization, without a separate owner.
     public static func circle(center: Point, radius: Magnitude<Length>,
                               orientation: Rotation<2, Angular> = .identity) -> Self {
         Self(validatedCenter: center, radius: radius, orientation: orientation)
     }
 
-    /// A directed interval of this elliptical parameterization.
     public struct Arc {
         public var ellipse: Ellipse
         public var interval: Angle.Sweep<Angular>
