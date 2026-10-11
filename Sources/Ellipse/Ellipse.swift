@@ -7,7 +7,7 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
     public let semiMinor: Magnitude<Length>
     public var orientation: Rotation<2, Angular>
 
-    public enum Error: Swift.Error, Equatable, Sendable { case unorderedAxes }
+    public enum Error: Swift::Error, Equatable, Sendable { case unorderedAxes }
 
     public init(center: Point, semiMajor: Magnitude<Length>, semiMinor: Magnitude<Length>,
                 orientation: Rotation<2, Angular>) throws(Error) {
@@ -18,11 +18,6 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
         self.orientation = orientation
     }
 
-    public static func circle(center: Point, radius: Magnitude<Length>,
-                              orientation: Rotation<2, Angular> = .identity) -> Self {
-        Self(validatedCenter: center, radius: radius, orientation: orientation)
-    }
-
     public struct Arc {
         public var ellipse: Ellipse
         public var interval: Angle.Sweep<Angular>
@@ -30,9 +25,20 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
             self.ellipse = ellipse
             self.interval = interval
         }
-        public func reversed() throws(Angle.Sweep<Angular>.Error) -> Self {
-            Self(ellipse: ellipse, interval: try interval.reversed())
-        }
+    }
+}
+
+extension Ellipse {
+
+    public static func circle(center: Point, radius: Magnitude<Length>,
+                              orientation: Rotation<2, Angular> = .identity) -> Self {
+        Self(validatedCenter: center, radius: radius, orientation: orientation)
+    }
+}
+
+extension Ellipse.Arc {
+    public func reversed() throws(Angle.Sweep<Angular>.Error) -> Self {
+        Self(ellipse: ellipse, interval: try interval.reversed())
     }
 }
 
