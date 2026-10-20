@@ -9,8 +9,12 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
 
     public enum Error: Swift::Error, Equatable, Sendable { case unorderedAxes }
 
-    public init(center: Point, semiMajor: Magnitude<Length>, semiMinor: Magnitude<Length>,
-                orientation: Rotation<2, Angular>) throws(Error) {
+    public init(
+        center: Point,
+        semiMajor: Magnitude<Length>,
+        semiMinor: Magnitude<Length>,
+        orientation: Rotation<2, Angular>
+    ) throws(Error) {
         guard semiMajor.value >= semiMinor.value else { throw .unorderedAxes }
         self.center = center
         self.semiMajor = semiMajor
@@ -30,8 +34,11 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
 
 extension Ellipse {
 
-    public static func circle(center: Point, radius: Magnitude<Length>,
-                              orientation: Rotation<2, Angular> = .identity) -> Self {
+    public static func circle(
+        center: Point,
+        radius: Magnitude<Length>,
+        orientation: Rotation<2, Angular> = .identity
+    ) -> Self {
         Self(validatedCenter: center, radius: radius, orientation: orientation)
     }
 }
@@ -50,26 +57,29 @@ extension Ellipse.Arc: Hashable where Point: Hashable, Length: Hashable, Angular
 extension Ellipse.Arc: Sendable where Point: Sendable, Length: Sendable, Angular: Sendable {}
 
 #if !hasFeature(Embedded)
-extension Ellipse {
-    private enum CodingKeys: String, CodingKey { case center, semiMajor, semiMinor, orientation }
-}
-extension Ellipse: Encodable where Point: Encodable, Length: Encodable, Angular: Encodable {}
-extension Ellipse: Decodable where Point: Decodable, Length: Decodable, Angular: Decodable {
-    public init(from decoder: any Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        let center = try c.decode(Point.self, forKey: .center)
-        let major = try c.decode(Magnitude<Length>.self, forKey: .semiMajor)
-        let minor = try c.decode(Magnitude<Length>.self, forKey: .semiMinor)
-        let orientation = try c.decode(Rotation<2, Angular>.self, forKey: .orientation)
-        do { try self.init(center: center, semiMajor: major, semiMinor: minor, orientation: orientation) }
-        catch {
-            throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath,
-                debugDescription: "Ellipse semi-major length must be at least its semi-minor length"))
+    extension Ellipse {
+        private enum CodingKeys: String, CodingKey { case center, semiMajor, semiMinor, orientation }
+    }
+    extension Ellipse: Encodable where Point: Encodable, Length: Encodable, Angular: Encodable {}
+    extension Ellipse: Decodable where Point: Decodable, Length: Decodable, Angular: Decodable {
+        public init(from decoder: any Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            let center = try c.decode(Point.self, forKey: .center)
+            let major = try c.decode(Magnitude<Length>.self, forKey: .semiMajor)
+            let minor = try c.decode(Magnitude<Length>.self, forKey: .semiMinor)
+            let orientation = try c.decode(Rotation<2, Angular>.self, forKey: .orientation)
+            do { try self.init(center: center, semiMajor: major, semiMinor: minor, orientation: orientation) } catch {
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: decoder.codingPath,
+                        debugDescription: "Ellipse semi-major length must be at least its semi-minor length"
+                    )
+                )
+            }
         }
     }
-}
-extension Ellipse.Arc: Encodable where Point: Encodable, Length: Encodable, Angular: Encodable {}
-extension Ellipse.Arc: Decodable where Point: Decodable, Length: Decodable, Angular: Decodable {}
+    extension Ellipse.Arc: Encodable where Point: Encodable, Length: Encodable, Angular: Encodable {}
+    extension Ellipse.Arc: Decodable where Point: Decodable, Length: Decodable, Angular: Decodable {}
 #endif
 
 extension Ellipse {
