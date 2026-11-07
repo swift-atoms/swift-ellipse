@@ -7,6 +7,8 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
     public let semiMinor: Magnitude<Length>
     public var orientation: Rotation<2, Angular>
 
+    public enum Error: Swift::Error, Equatable, Sendable { case unorderedAxes }
+
     public init(
         center: Point,
         semiMajor: Magnitude<Length>,
@@ -18,6 +20,15 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
         self.semiMajor = semiMajor
         self.semiMinor = semiMinor
         self.orientation = orientation
+    }
+
+    public struct Arc {
+        public var ellipse: Ellipse
+        public var interval: Angle.Sweep<Angular>
+        public init(ellipse: Ellipse, interval: Angle.Sweep<Angular>) {
+            self.ellipse = ellipse
+            self.interval = interval
+        }
     }
 }
 
@@ -77,19 +88,5 @@ extension Ellipse {
         self.semiMajor = radius
         self.semiMinor = radius
         self.orientation = orientation
-    }
-}
-
-extension Ellipse {
-
-    public enum Error: Swift::Error, Equatable, Sendable { case unorderedAxes }
-
-    public struct Arc {
-        public var ellipse: Ellipse
-        public var interval: Angle.Sweep<Angular>
-        public init(ellipse: Ellipse, interval: Angle.Sweep<Angular>) {
-            self.ellipse = ellipse
-            self.interval = interval
-        }
     }
 }
