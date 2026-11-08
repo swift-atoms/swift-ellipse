@@ -1,5 +1,5 @@
-@_exported public import Magnitude
-@_exported public import Rotation
+public import Magnitude
+public import Rotation
 
 public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingPoint> {
     public var center: Point
