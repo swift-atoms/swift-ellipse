@@ -1,11 +1,13 @@
-public import Magnitude
-public import Rotation
+@_exported public import Magnitude
+@_exported public import Rotation
 
 public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingPoint> {
     public var center: Point
     public let semiMajor: Magnitude<Length>
     public let semiMinor: Magnitude<Length>
     public var orientation: Rotation<2, Angular>
+
+    public enum Error: Swift::Error, Equatable, Sendable { case unorderedAxes }
 
     public init(
         center: Point,
@@ -19,10 +21,6 @@ public struct Ellipse<Point, Length: Magnitude::Scalar, Angular: BinaryFloatingP
         self.semiMinor = semiMinor
         self.orientation = orientation
     }
-}
-
-extension Ellipse {
-    public enum Error: Swift::Error, Equatable, Sendable { case unorderedAxes }
 
     public struct Arc {
         public var ellipse: Ellipse
@@ -35,6 +33,7 @@ extension Ellipse {
 }
 
 extension Ellipse {
+
     public static func circle(
         center: Point,
         radius: Magnitude<Length>,
